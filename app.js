@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
@@ -10,6 +11,7 @@ const usersRouter = require('./routes/users');
 
 const cors = require('cors');
 
+const passport = require('passport');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 
@@ -32,6 +34,14 @@ app.use(
     }),
   })
 );
+
+app.use(passport.session());
+require('./config/passport');
+
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  next();
+});
 
 app.use(logger('dev'));
 app.use(express.json());
