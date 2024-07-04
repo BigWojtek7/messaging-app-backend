@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
@@ -9,15 +10,28 @@ const usersRouter = require('./routes/users');
 
 const cors = require('cors');
 
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
 
 mongoose.connect('mongo_url');
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'mongo connection error');)
+db.on('error', console.error.bind(console, 'mongo connection error'));
 
 const app = express();
 
 app.use(cors());
+
+app.use(
+  session({
+    secret: 'someSecret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }, // one day
+    store: MongoStore.create({
+      client: mongoose.connection.getClient(),
+    }),
+  })
+);
 
 app.use(logger('dev'));
 app.use(express.json());
