@@ -9,6 +9,12 @@ const usersRouter = require('./routes/users');
 
 const cors = require('cors');
 
+const mongoose = require('mongoose')
+
+mongoose.connect('mongo_url');
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'mongo connection error');)
+
 const app = express();
 
 app.use(cors());
