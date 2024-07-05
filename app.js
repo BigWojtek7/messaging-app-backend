@@ -17,7 +17,9 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 
-mongoose.connect('mongo_url');
+mongoose.connect(
+  'mongodb+srv://wojtasjg:lSwWOPNyGAVV32eM@cluster0.lahxsgw.mongodb.net/messaging_app?retryWrites=true&w=majority&appName=Cluster0'
+);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'mongo connection error'));
 
