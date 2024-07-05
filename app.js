@@ -6,6 +6,8 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
+const isAuth = require('./config/isAuth');
+
 const usersRouter = require('./routes/users');
 const messagesRouter = require('./routes/messages');
 
@@ -48,6 +50,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(isAuth);
 
 app.use('/', usersRouter);
 app.use('/', messagesRouter);
