@@ -5,7 +5,7 @@ const { body, validationResult } = require('express-validator');
 
 exports.all_messages_get = async (req, res) => {
   try {
-    const allUserMessages = await Message.find({ receiver: req.params.userId })
+    const allUserMessages = await Message.find({ receiver: req.params.userid })
       .sort({ date: 1 })
       .populate('user')
       .exec();
@@ -26,7 +26,7 @@ exports.create_message_post = [
       title: req.body.title,
       content: req.body.content,
       date: new Date(),
-      author: req.params.id,
+      author: req.params.userid,
       receiver: req.body.receiver,
     });
 
