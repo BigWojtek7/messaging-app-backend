@@ -4,7 +4,13 @@ const bcrypt = require('bcryptjs');
 
 const User = require('../models/user');
 
-exports.login_post = passport.authenticate('local');
+exports.login_post = passport.authenticate('local', {
+  failureRedirect: '/login-failure',
+});
+
+exports.login_failure_get = (req, res) => {
+  res.json({ success: false, msg: 'Wrong password or username' });
+};
 
 exports.authenticate_get = (req, res) => {
   const isAuthenticated = req.isAuthenticated();
