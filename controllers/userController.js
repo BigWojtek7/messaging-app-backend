@@ -2,31 +2,28 @@ const passport = require('passport');
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 
+
+const issueJWT = require('../config/issueJwt')
+
 const User = require('../models/user');
 
-exports.login_post = function (req, res, next) {
-  passport.authenticate('local', function (err, user) {
-    if (err) {
-      return next(err);
-    }
+exports.user_login_post =  (req, res, next) => {
+  passport.authenticate('local', async (err, user) => {
+    try {
+      if (err || !user) {
+        const error = new Error('An error occurred.');
 
-    if (!user) {
-      return res.status(401).json({
-        success: false, msg: 'Wrong password or username' 
-      });
-    }
-
-    req.logIn(user, function (err) {
-      if (err) {
-        return res.status(500).json({
-          err: 'Could not log in user',
-        });
+        return next(error);
       }
-      console.log(req.isAuthenticated())
+      const tokenObject = issueJWT(user);
       res.status(200).json({
-        status: 'Login successful!',
+        success: true,
+        token: tokenObject.token,
+        expiresIn: tokenObject.expires,
       });
-    });
+    } catch (err) {
+      next(err);
+    }
   })(req, res, next);
 };
 
@@ -35,7 +32,7 @@ exports.login_post = function (req, res, next) {
 // };
 
 exports.authenticate_get = (req, res) => {
-  console.log(req.session)
+  console.log(req.session);
   const isAuthenticated = req.isAuthenticated();
   res.json({ authenticated: isAuthenticated });
 };
@@ -56,7 +53,7 @@ exports.register_post = [
     }).exec();
 
     if (userInDatabase.length > 0) {
-      res.json({ success: false, msg: 'Username already exists' });
+      res.json({ success: false, msg: [{msg:'Username already exists'}]} );
       return;
     }
 

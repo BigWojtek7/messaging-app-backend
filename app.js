@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const session = require('express-session');
 
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -15,7 +14,7 @@ const cors = require('cors');
 
 const passport = require('passport');
 const mongoose = require('mongoose');
-const MongoStore = require('connect-mongo');
+
 
 mongoose.connect(
   'mongodb+srv://wojtasjg:lSwWOPNyGAVV32eM@cluster0.lahxsgw.mongodb.net/messaging_app?retryWrites=true&w=majority&appName=Cluster0'
@@ -24,28 +23,23 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'mongo connection error'));
 
 const app = express();
+app.use(passport.initialize())
 
+app.use(cors());
 
-app.use(
-  cors({
-    origin: 'http://localhost:5173',
-    credentials: true,
-  })
-);
+// app.use(
+//   session({
+//     secret: 'someSecret',
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: { maxAge: 1000 * 60 * 60 * 24 }, // one day
+//     store: MongoStore.create({
+//       client: mongoose.connection.getClient(),
+//     }),
+//   })
+// );
 
-app.use(
-  session({
-    secret: 'someSecret',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 }, // one day
-    store: MongoStore.create({
-      client: mongoose.connection.getClient(),
-    }),
-  })
-);
-
-app.use(passport.session());
+// app.use(passport.session());
 
 app.use(logger('dev'));
 app.use(express.json());
