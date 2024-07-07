@@ -25,13 +25,19 @@ db.on('error', console.error.bind(console, 'mongo connection error'));
 
 const app = express();
 
-app.use(cors());
+
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+);
 
 app.use(
   session({
     secret: 'someSecret',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 * 24 }, // one day
     store: MongoStore.create({
       client: mongoose.connection.getClient(),
@@ -40,12 +46,6 @@ app.use(
 );
 
 app.use(passport.session());
-require('./config/passport');
-
-app.use((req, res, next) => {
-  res.locals.currentUser = req.user;
-  next();
-});
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -53,7 +53,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use(isAuth);
+
+
+require('./config/passport');
+
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  next();
+});
 
 app.use('/', usersRouter);
 app.use('/', messagesRouter);
