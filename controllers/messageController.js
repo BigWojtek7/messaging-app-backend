@@ -1,5 +1,6 @@
 // const User = require('../models/user');
 // const bcrypt = require('bcryptjs');
+const {jwtDecode} = require('jwt-decode')
 const Message = require('../models/messages');
 const { body, validationResult } = require('express-validator');
 
@@ -22,11 +23,13 @@ exports.create_message_post = [
   async (req, res) => {
     const errors = validationResult(req);
 
+    const userId = jwtDecode(req.headers.authorization).sub;
+
     const message = new Message({
       title: req.body.title,
       content: req.body.content,
       date: new Date(),
-      author: req.params.userid,
+      author: userId,
       receiver: req.body.receiver,
     });
 

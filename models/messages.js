@@ -9,4 +9,12 @@ const MessageSchema = new Schema({
   receiver: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
+MessageSchema.virtual('date_format').get(function () {
+  return this.date.toLocaleDateString('pl-PL');
+});
+
+MessageSchema.set('toJSON', {
+  virtuals: true,
+});
+
 module.exports = mongoose.model('Message', MessageSchema);
