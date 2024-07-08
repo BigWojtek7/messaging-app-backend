@@ -11,7 +11,7 @@ exports.user_get = async (req, res, next) => {
     const userId = jwtDecode(req.headers.authorization).sub;
     const user = await User.findById(userId, {
       username: 1,
-      _id: 0,
+      _id: 1,
     }).exec();
     res.json(user);
   } catch (err) {

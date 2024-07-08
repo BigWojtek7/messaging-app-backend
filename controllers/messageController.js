@@ -4,13 +4,23 @@ const {jwtDecode} = require('jwt-decode')
 const Message = require('../models/messages');
 const { body, validationResult } = require('express-validator');
 
+
+exports.message_count_get = async (req, res,) => {
+  try {
+    const userMessageNum = await Message.countDocuments({receiver: req.params.userid}).exec()
+    res.json(userMessageNum);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 exports.all_messages_get = async (req, res) => {
   try {
     const allUserMessages = await Message.find({ receiver: req.params.userid })
       .sort({ date: 1 })
-      .populate('user')
+      .populate('author', 'username')
       .exec();
-    res.json({ messages: allUserMessages });
+    res.json(allUserMessages);
   } catch (err) {
     console.log(err);
   }
