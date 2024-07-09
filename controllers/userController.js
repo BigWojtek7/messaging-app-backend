@@ -93,6 +93,38 @@ exports.register_post = [
   },
 ];
 
+exports.user_edit = [
+  body('username', 'Username is required').trim().isLength({ min: 1 }).escape(),
+  body('password', 'Password is required').trim().isLength({ min: 1 }).escape(),
+  body('re_password', 'Passwords do not match')
+    .custom((value, { req }) => {
+      return value === req.body.password;
+    })
+    .trim()
+    .escape(),
+
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const user = new User({
+      username: req.body.username,
+      password: hashedPassword,
+      _id: req.params.id,
+    });
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      res.json({ success: false, msg: errors.array() });
+    } else {
+      try {
+        await User.findByIdAndUpdate(req.params.id, user, {});
+      } catch (err) {
+        next(err);
+      }
+      res.json({ success: true, msg: 'user updated' });
+    }
+  },
+];
+
 exports.logout_get = (req, res, next) => {
   req.logout((err) => {
     if (err) {
