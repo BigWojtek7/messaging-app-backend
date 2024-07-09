@@ -10,7 +10,7 @@ const MessageSchema = new Schema({
 });
 
 MessageSchema.virtual('date_format').get(function () {
-  return this.date.toLocaleDateString('pl-PL');
+  return `${this.date.toLocaleDateString('pl-PL')} / ${this.date.toLocaleTimeString('pl-PL')}`;
 });
 
 MessageSchema.set('toJSON', {

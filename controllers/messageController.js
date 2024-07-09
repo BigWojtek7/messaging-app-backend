@@ -1,13 +1,14 @@
 // const User = require('../models/user');
 // const bcrypt = require('bcryptjs');
-const {jwtDecode} = require('jwt-decode')
+const { jwtDecode } = require('jwt-decode');
 const Message = require('../models/messages');
 const { body, validationResult } = require('express-validator');
 
-
-exports.message_count_get = async (req, res,) => {
+exports.message_count_get = async (req, res) => {
   try {
-    const userMessageNum = await Message.countDocuments({receiver: req.params.userid}).exec()
+    const userMessageNum = await Message.countDocuments({
+      receiver: req.params.userid,
+    }).exec();
     res.json(userMessageNum);
   } catch (err) {
     console.log(err);
@@ -55,3 +56,12 @@ exports.create_message_post = [
     }
   },
 ];
+
+exports.message_delete = async (req, res, next) => {
+  try{
+    await Message.findByIdAndDelete(req.params.messageid);
+  }catch(err){
+    next(err)
+  }
+  res.json({ success: true, msg: 'Message deleted' });
+};
