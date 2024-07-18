@@ -119,8 +119,14 @@ exports.username_edit = [
 ];
 
 exports.password_edit = [
-  body('old_password', 'Old Password is required').trim().isLength({ min: 1 }).escape(),
-  body('new_password', 'New Password is required').trim().isLength({ min: 1 }).escape(),
+  body('old_password', 'Old Password is required')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('new_password', 'New Password is required')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
   body('re_new_password', 'Passwords do not match')
     .custom((value, { req }) => {
       return value === req.body.new_password;
@@ -138,7 +144,10 @@ exports.password_edit = [
     if (!match) {
       return res
         .status(401)
-        .json({ success: false, msg: 'You entered the wrong old password' });
+        .json({
+          success: false,
+          msg: [{ msg: 'You entered the wrong old password' }],
+        });
     }
     const hashedPassword = await bcrypt.hash(req.body.new_password, 10);
     const newUser = new User({
