@@ -93,34 +93,70 @@ exports.register_post = [
   },
 ];
 
-exports.user_edit = [
+exports.username_edit = [
   body('username', 'Username is required').trim().isLength({ min: 1 }).escape(),
-  body('password', 'Password is required').trim().isLength({ min: 1 }).escape(),
-  body('re_password', 'Passwords do not match')
-    .custom((value, { req }) => {
-      return value === req.body.password;
-    })
-    .trim()
-    .escape(),
 
   async (req, res, next) => {
     const errors = validationResult(req);
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = new User({
+    const user = await User.findById(req.params.userid).exec();
+    const newUser = new User({
       username: req.body.username,
-      password: hashedPassword,
-      _id: req.params.id,
+      password: user.password,
+      _id: user.id,
     });
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
       res.json({ success: false, msg: errors.array() });
     } else {
       try {
-        await User.findByIdAndUpdate(req.params.id, user, {});
+        await User.findByIdAndUpdate(user.id, newUser, {});
       } catch (err) {
         next(err);
       }
-      res.json({ success: true, msg: 'user updated' });
+      res.json({ success: true, msg: 'Your Username has been updated' });
+    }
+  },
+];
+
+exports.password_edit = [
+  body('old_password', 'Old Password is required').trim().isLength({ min: 1 }).escape(),
+  body('new_password', 'New Password is required').trim().isLength({ min: 1 }).escape(),
+  body('re_new_password', 'Passwords do not match')
+    .custom((value, { req }) => {
+      return value === req.body.new_password;
+    })
+    .trim()
+    .escape(),
+
+  async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const user = await User.findById(req.params.userid).exec();
+
+    const match = await bcrypt.compare(req.body.old_password, user.password);
+
+    if (!match) {
+      return res
+        .status(401)
+        .json({ success: false, msg: 'You entered the wrong old password' });
+    }
+    const hashedPassword = await bcrypt.hash(req.body.new_password, 10);
+    const newUser = new User({
+      username: user.username,
+      password: hashedPassword,
+      _id: user.id,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      res.json({ success: false, msg: errors.array() });
+    } else {
+      try {
+        await User.findByIdAndUpdate(user.id, newUser, {});
+      } catch (err) {
+        next(err);
+      }
+      res.json({ success: true, msg: 'User password has been updated' });
     }
   },
 ];
