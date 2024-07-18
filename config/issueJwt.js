@@ -9,8 +9,7 @@ function issueJWT(user) {
     sub: _id,
     iat: Date.now(),
   };
-  // const secret = process.env.JWT_SECRET;
-  const secret = 'secret';
+  const secret = process.env.JWT_SECRET;
   const signedToken = jsonwebtoken.sign(payload, secret, {
     expiresIn: expiresIn,
     // algorithm: 'RS256',
