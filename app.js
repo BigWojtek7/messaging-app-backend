@@ -40,4 +40,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', usersRouter);
 app.use('/', messagesRouter);
 
+// app.get('/test', (req, res) => {
+//   res.json({
+//     success: true,
+//     msg: 'Server is ready',
+//   });
+// });
+
 module.exports = app;
