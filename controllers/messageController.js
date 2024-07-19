@@ -4,18 +4,18 @@ const { jwtDecode } = require('jwt-decode');
 const Message = require('../models/messages');
 const { body, validationResult } = require('express-validator');
 
-exports.message_count_get = async (req, res) => {
+exports.message_count_get = async (req, res, next) => {
   try {
     const userMessageNum = await Message.countDocuments({
       receiver: req.params.userid,
     }).exec();
     res.json(userMessageNum);
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
-exports.all_messages_get = async (req, res) => {
+exports.all_messages_get = async (req, res, next) => {
   try {
     const allUserMessages = await Message.find({ receiver: req.params.userid })
       .sort({ date: 1 })
@@ -23,7 +23,7 @@ exports.all_messages_get = async (req, res) => {
       .exec();
     res.json(allUserMessages);
   } catch (err) {
-    console.log(err);
+    next(err)
   }
 };
 
@@ -31,7 +31,7 @@ exports.create_message_post = [
   body('title', 'title is require').trim().isLength({ min: 1 }).escape(),
   body('content', 'content is required').trim().isLength({ min: 1 }).escape(),
 
-  async (req, res) => {
+  async (req, res, next) => {
     const errors = validationResult(req);
 
     const userId = jwtDecode(req.headers.authorization).sub;
@@ -50,7 +50,7 @@ exports.create_message_post = [
       try {
         await message.save();
       } catch (err) {
-        console.log(err);
+        next(err)
       }
       res.json({ success: true, msg: 'Message has been sent' });
     }

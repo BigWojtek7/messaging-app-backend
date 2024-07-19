@@ -88,7 +88,6 @@ exports.register_post = [
       res.json({ success: false, msg: errors.array() });
     } else {
       const newUser = await user.save();
-      console.log(newUser);
       const tokenObject = issueJWT(newUser);
       res.status(200).json({
         success: true,
