@@ -21,4 +21,4 @@ function issueJWT(user) {
   };
 }
 
-module.exports = issueJWT
+module.exports = issueJWT;

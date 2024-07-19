@@ -19,8 +19,6 @@ const limiter = RateLimit({
   max: 10000,
 });
 
-
-
 const passport = require('passport');
 const mongoose = require('mongoose');
 

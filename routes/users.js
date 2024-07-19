@@ -25,10 +25,9 @@ router.patch(
   user_controller.password_edit
 );
 
-// router.get('/login-failure', user_controller.login_failure_get)
 
 router.post('/register', user_controller.register_post);
 
-router.get('/logout', user_controller.logout_get);
+// router.get('/logout', user_controller.logout_get);
 
 module.exports = router;

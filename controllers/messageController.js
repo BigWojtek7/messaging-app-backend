@@ -58,10 +58,10 @@ exports.create_message_post = [
 ];
 
 exports.message_delete = async (req, res, next) => {
-  try{
+  try {
     await Message.findByIdAndDelete(req.params.messageid);
-  }catch(err){
-    next(err)
+  } catch (err) {
+    next(err);
   }
   res.json({ success: true, msg: 'Message deleted' });
 };
