@@ -87,8 +87,15 @@ exports.register_post = [
     if (!errors.isEmpty()) {
       res.json({ success: false, msg: errors.array() });
     } else {
-      await user.save();
-      res.json({ success: true, msg: 'New user has been saved' });
+      const newUser = await user.save();
+      console.log(newUser);
+      const tokenObject = issueJWT(newUser);
+      res.status(200).json({
+        success: true,
+        msg: 'New user has been saved',
+        token: tokenObject.token,
+        expiresIn: tokenObject.expires,
+      });
     }
   },
 ];
@@ -142,12 +149,10 @@ exports.password_edit = [
     const match = await bcrypt.compare(req.body.old_password, user.password);
 
     if (!match) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          msg: [{ msg: 'You entered the wrong old password' }],
-        });
+      return res.status(401).json({
+        success: false,
+        msg: [{ msg: 'You entered the wrong old password' }],
+      });
     }
     const hashedPassword = await bcrypt.hash(req.body.new_password, 10);
     const newUser = new User({
